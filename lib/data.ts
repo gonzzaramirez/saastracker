@@ -154,7 +154,10 @@ export async function getPaymentStats(): Promise<PaymentStats> {
   const clientCountResult = await db.execute('SELECT COUNT(*) as count FROM clients')
   const clientCount = clientCountResult.rows[0].count as number
 
-  const activeClientsResult = await db.execute('SELECT * FROM clients WHERE status = ?', ['active'])
+  const activeClientsResult = await db.execute({
+    sql: 'SELECT * FROM clients WHERE status = ?', 
+    args: ['active']
+  })
   const activeClients = activeClientsResult.rows.map(mapClient)
 
   // Paid this month
