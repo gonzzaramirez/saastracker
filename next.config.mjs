@@ -6,11 +6,7 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // Required for @libsql/client native binaries to be included in Vercel serverless bundle
-  outputFileTracingIncludes: {
-    '/api/**/*': ['./node_modules/@libsql/client/**/*'],
-    '/': ['./node_modules/@libsql/client/**/*'],
-  },
+  // Tell Next.js NOT to bundle @libsql/client — let Vercel's Node.js runtime handle it natively
   serverExternalPackages: ['@libsql/client'],
 }
 
