@@ -17,32 +17,32 @@ export async function GET() {
       sql: `SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE strftime('%Y-%m', date) = ?`,
       args: [thisMonth],
     })
-    const totalThisMonth = thisMonthResult.rows[0]?.total as number || 0
+    const totalThisMonth = Number(thisMonthResult.rows[0]?.total || 0)
     
     // Total last month
     const lastMonthResult = await db.execute({
       sql: `SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE strftime('%Y-%m', date) = ?`,
       args: [lastMonth],
     })
-    const totalLastMonth = lastMonthResult.rows[0]?.total as number || 0
+    const totalLastMonth = Number(lastMonthResult.rows[0]?.total || 0)
     
     // Total all time
     const allTimeResult = await db.execute('SELECT COALESCE(SUM(amount), 0) as total FROM payments')
-    const totalAllTime = allTimeResult.rows[0]?.total as number || 0
+    const totalAllTime = Number(allTimeResult.rows[0]?.total || 0)
     
     // Client counts
     const clientCountResult = await db.execute('SELECT COUNT(*) as count FROM clients')
-    const clientCount = clientCountResult.rows[0]?.count as number || 0
+    const clientCount = Number(clientCountResult.rows[0]?.count || 0)
     
     const activeClientsResult = await db.execute(`SELECT COUNT(*) as count FROM clients WHERE status = 'active'`)
-    const activeClients = activeClientsResult.rows[0]?.count as number || 0
+    const activeClients = Number(activeClientsResult.rows[0]?.count || 0)
     
     // Paid this month
     const paidThisMonthResult = await db.execute({
       sql: `SELECT COUNT(DISTINCT client_id) as count FROM payments WHERE strftime('%Y-%m', date) = ?`,
       args: [thisMonth],
     })
-    const paidThisMonth = paidThisMonthResult.rows[0]?.count as number || 0
+    const paidThisMonth = Number(paidThisMonthResult.rows[0]?.count || 0)
     const pendingThisMonth = activeClients - paidThisMonth
     
     // Monthly revenue for chart
@@ -59,7 +59,7 @@ export async function GET() {
     const monthlyRevenue = monthlyRevenueResult.rows
       .map(row => ({
         month: formatMonthLabel(row.month as string),
-        revenue: row.revenue as number,
+        revenue: Number(row.revenue),
       }))
       .reverse()
     
@@ -87,8 +87,8 @@ export async function GET() {
     categoryStatsResult.rows.forEach(row => {
       const cat = row.category as 'gimnasio' | 'pilates' | 'cymple'
       statsByCategory[cat] = {
-        clients: row.clients as number,
-        revenue: row.revenue as number,
+        clients: Number(row.clients),
+        revenue: Number(row.revenue),
       }
     })
     
@@ -109,7 +109,7 @@ export async function GET() {
       clientId: row.client_id as string,
       clientName: row.client_name as string,
       category: row.client_category as string,
-      amount: row.amount as number,
+      amount: Number(row.amount),
       date: row.date as string,
       description: row.description as string,
       method: row.method as string,
@@ -122,7 +122,7 @@ export async function GET() {
     
     // Average monthly
     const monthsResult = await db.execute(`SELECT COUNT(DISTINCT strftime('%Y-%m', date)) as count FROM payments`)
-    const monthsActive = monthsResult.rows[0]?.count as number || 1
+    const monthsActive = Number(monthsResult.rows[0]?.count || 1)
     const averageMonthly = totalAllTime / monthsActive
     
     return NextResponse.json({

@@ -31,7 +31,7 @@ export async function GET(
     const payments = paymentsResult.rows.map(p => ({
       id: p.id as string,
       clientId: p.client_id as string,
-      amount: p.amount as number,
+      amount: Number(p.amount),
       date: p.date as string,
       description: p.description as string,
       method: p.method as PaymentMethod,
@@ -48,7 +48,7 @@ export async function GET(
       phone: row.phone as string,
       email: row.email as string,
       password: row.password as string,
-      monthlyFee: row.monthly_fee as number,
+      monthlyFee: Number(row.monthly_fee),
       status: row.status as 'active' | 'inactive',
       createdAt: row.created_at as string,
       payments,

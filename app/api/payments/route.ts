@@ -23,7 +23,7 @@ export async function GET() {
       clientId: row.client_id as string,
       clientName: row.client_name as string,
       category: row.client_category as SaaSCategory,
-      amount: row.amount as number,
+      amount: Number(row.amount),
       date: row.date as string,
       description: row.description as string,
       method: row.method as PaymentMethod,

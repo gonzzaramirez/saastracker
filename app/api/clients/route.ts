@@ -28,10 +28,10 @@ export async function GET() {
       phone: row.phone as string,
       email: row.email as string,
       password: row.password as string,
-      monthlyFee: row.monthly_fee as number,
+      monthlyFee: Number(row.monthly_fee),
       status: row.status as 'active' | 'inactive',
       createdAt: row.created_at as string,
-      totalPaid: row.total_paid as number,
+      totalPaid: Number(row.total_paid),
       lastPayment: row.last_payment as string | null,
     }))
     
