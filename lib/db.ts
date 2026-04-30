@@ -1,4 +1,4 @@
-import { createClient, type Client } from '@libsql/client'
+import { createClient, type Client } from '@libsql/client/http'
 
 // Lazy singleton — created on first use, not at module import time
 let _db: Client | null = null
