@@ -16,9 +16,12 @@ const categoryIcons: Record<SaaSCategory, React.ElementType> = {
   cymple: Calendar,
 }
 
+import { initializeDatabase } from '@/lib/db'
+
 export default async function DashboardPage() {
   let stats, monthlyRevenue, recentPayments, categoryStats
   try {
+    await initializeDatabase()
     ;[stats, monthlyRevenue, recentPayments, categoryStats] = await Promise.all([
       getPaymentStats(),
       getMonthlyRevenue(),

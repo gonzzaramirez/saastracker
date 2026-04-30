@@ -120,22 +120,22 @@ export async function getPaymentStats(): Promise<PaymentStats> {
     sql: 'SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE date LIKE ?',
     args: [thisMonthPrefix]
   })
-  const totalThisMonth = totalThisMonthResult.rows[0].total as number
+  const totalThisMonth = Number(totalThisMonthResult.rows[0].total)
 
   // Total last month
   const totalLastMonthResult = await db.execute({
     sql: 'SELECT COALESCE(SUM(amount), 0) as total FROM payments WHERE date LIKE ?',
     args: [lastMonthPrefix]
   })
-  const totalLastMonth = totalLastMonthResult.rows[0].total as number
+  const totalLastMonth = Number(totalLastMonthResult.rows[0].total)
 
   // Total all time
   const totalAllTimeResult = await db.execute('SELECT COALESCE(SUM(amount), 0) as total FROM payments')
-  const totalAllTime = totalAllTimeResult.rows[0].total as number
+  const totalAllTime = Number(totalAllTimeResult.rows[0].total)
   
   // Months active
   const monthsActiveResult = await db.execute('SELECT COUNT(DISTINCT substr(date, 1, 7)) as count FROM payments')
-  const monthsActive = monthsActiveResult.rows[0].count as number
+  const monthsActive = Number(monthsActiveResult.rows[0].count)
   
   const averageMonthly = monthsActive > 0 ? totalAllTime / monthsActive : 0
   const monthlyGrowth = totalLastMonth > 0 
@@ -144,7 +144,7 @@ export async function getPaymentStats(): Promise<PaymentStats> {
 
   // Client counts
   const clientCountResult = await db.execute('SELECT COUNT(*) as count FROM clients')
-  const clientCount = clientCountResult.rows[0].count as number
+  const clientCount = Number(clientCountResult.rows[0].count)
 
   const activeClientsResult = await db.execute({
     sql: 'SELECT * FROM clients WHERE status = ?', 
@@ -194,7 +194,7 @@ export async function getMonthlyRevenue(): Promise<MonthlyRevenue[]> {
 
   const dbMonths: Record<string, number> = {}
   result.rows.forEach(r => {
-    dbMonths[r.month as string] = r.revenue as number
+    dbMonths[r.month as string] = Number(r.revenue)
   })
 
   return last6Months.map(month => ({
@@ -261,7 +261,7 @@ export async function getStatsByCategory(): Promise<Record<SaaSCategory, { clien
   clientsResult.rows.forEach(r => {
     const cat = r.category as SaaSCategory
     if (stats[cat]) {
-      stats[cat].clients = r.count as number
+      stats[cat].clients = Number(r.count)
     }
   })
   
@@ -283,7 +283,7 @@ export async function getStatsByCategory(): Promise<Record<SaaSCategory, { clien
   revenueResult.rows.forEach(r => {
     const cat = r.category as SaaSCategory
     if (stats[cat]) {
-      stats[cat].revenue = r.revenue as number
+      stats[cat].revenue = Number(r.revenue)
     }
   })
   
