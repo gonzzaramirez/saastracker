@@ -20,6 +20,8 @@ type PaymentFilter = 'all' | 'paid' | 'pending'
 
 export default function ClientsPage() {
   const [allClients, setAllClients] = useState<ClientWithPayments[]>([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<string | null>(null)
   const [categoryStats, setCategoryStats] = useState<Record<SaaSCategory, { clients: number; revenue: number }>>({
     gimnasio: { clients: 0, revenue: 0 },
     pilates: { clients: 0, revenue: 0 },
@@ -28,8 +30,19 @@ export default function ClientsPage() {
 
   useEffect(() => {
     fetch('/api/clients')
-      .then(r => r.json())
-      .then(setAllClients)
+      .then(r => {
+        if (!r.ok) throw new Error('Error loading clients')
+        return r.json()
+      })
+      .then(data => {
+        setAllClients(Array.isArray(data) ? data : [])
+        setIsLoading(false)
+      })
+      .catch(err => {
+        setError(err.message)
+        setAllClients([])
+        setIsLoading(false)
+      })
   }, [])
 
   const [search, setSearch] = useState('')
@@ -169,7 +182,17 @@ export default function ClientsPage() {
         </div>
 
         {/* Clients Grid */}
-        {filteredClients.length > 0 ? (
+        {isLoading ? (
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-dashed border-border/60 bg-card/50 py-20">
+            <div className="h-8 w-8 animate-spin rounded-full border-2 border-border border-t-foreground" />
+            <p className="mt-4 text-sm text-muted-foreground">Cargando clientes...</p>
+          </div>
+        ) : error ? (
+          <div className="flex flex-col items-center justify-center rounded-3xl border border-destructive/60 bg-destructive/5 py-20">
+            <AlertCircle className="h-8 w-8 text-destructive" />
+            <p className="mt-4 text-sm text-destructive">{error}</p>
+          </div>
+        ) : filteredClients.length > 0 ? (
           <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
             {filteredClients.map((client) => (
               <ClientCard key={client.id} client={client} />

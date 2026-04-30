@@ -7,9 +7,9 @@ export const dynamic = 'force-dynamic'
 export async function GET() {
   try {
     await initializeDatabase()
-    
+
     const result = await db.execute(`
-      SELECT 
+      SELECT  
         c.*,
         COALESCE(SUM(p.amount), 0) as total_paid,
         MAX(p.date) as last_payment
@@ -18,8 +18,14 @@ export async function GET() {
       GROUP BY c.id
       ORDER BY c.created_at DESC
     `)
-    
-    const clients = result.rows.map(row => ({
+
+    if (!result.rows || result.rows.length === 0) {
+      return NextResponse.json([])
+    }
+
+    const currentMonth = new Date().toISOString().slice(0, 7)
+
+    const clients = result.rows.map((row: any) => ({
       id: row.id as string,
       name: row.name as string,
       category: row.category as SaaSCategory,
@@ -33,22 +39,23 @@ export async function GET() {
       createdAt: row.created_at as string,
       totalPaid: Number(row.total_paid),
       lastPayment: row.last_payment as string | null,
+      payments: [],
+      isPaidThisMonth: row.last_payment ? row.last_payment.startsWith(currentMonth) : false,
     }))
-    
+
     return NextResponse.json(clients)
   } catch (error) {
     console.error('Error fetching clients:', error)
-    return NextResponse.json({ error: 'Failed to fetch clients' }, { status: 500 })
+    return NextResponse.json({ error: 'Failed to fetch clients', details: String(error) }, { status: 500 })
   }
 }
 
 export async function POST(request: Request) {
   try {
     await initializeDatabase()
-    
+
     const body = await request.json()
 
-    // Validate required fields
     const required = ['name', 'category', 'website', 'ownerName', 'phone', 'email', 'password', 'monthlyFee']
     for (const field of required) {
       if (body[field] === undefined || body[field] === '') {
@@ -62,7 +69,7 @@ export async function POST(request: Request) {
     }
 
     const id = generateId()
-    
+
     await db.execute({
       sql: `INSERT INTO clients (id, name, category, website, owner_name, phone, email, password, monthly_fee, status)
             VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
@@ -79,7 +86,7 @@ export async function POST(request: Request) {
         body.status || 'active',
       ],
     })
-    
+
     return NextResponse.json({ id, ...body }, { status: 201 })
   } catch (error) {
     console.error('Error creating client:', error)
