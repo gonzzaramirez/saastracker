@@ -1,19 +1,11 @@
+'use server'
+
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
 import type { Client, Payment, ClientWithPayments, PaymentStats, MonthlyRevenue, SaaSCategory, PaymentMethod } from './types'
 import { db } from './db'
 
 dayjs.locale('es')
-
-// Format currency in Argentine Pesos
-export function formatCurrency(amount: number): string {
-  return new Intl.NumberFormat('es-AR', {
-    style: 'currency',
-    currency: 'ARS',
-    minimumFractionDigits: 0,
-    maximumFractionDigits: 0,
-  }).format(amount)
-}
 
 // Mapper functions to convert DB snake_case to TS camelCase
 function mapClient(row: any): Client {

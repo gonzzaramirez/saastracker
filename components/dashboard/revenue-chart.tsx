@@ -1,8 +1,8 @@
 'use client'
 
-import { Bar, BarChart, ResponsiveContainer, XAxis, YAxis, Tooltip } from 'recharts'
+import { ResponsiveContainer, BarChart, Bar, XAxis, YAxis, Tooltip, CartesianGrid } from 'recharts'
+import { formatCurrency } from '@/lib/utils'
 import type { MonthlyRevenue } from '@/lib/types'
-import { formatCurrency } from '@/lib/data'
 
 interface RevenueChartProps {
   data: MonthlyRevenue[]

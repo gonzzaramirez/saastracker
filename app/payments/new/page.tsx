@@ -3,13 +3,13 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
 import { Header } from '@/components/layout/header'
-import { getClientsWithPayments, formatCurrency } from '@/lib/data'
+import { getClientsWithPayments } from '@/lib/data'
 import { SAAS_CATEGORIES, PAYMENT_METHODS, type PaymentMethod, type ClientWithPayments } from '@/lib/types'
 import { ArrowLeft, Banknote, Building2, Check } from 'lucide-react'
 import Link from 'next/link'
 import { useState, Suspense, useEffect } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 
 dayjs.locale('es')
 

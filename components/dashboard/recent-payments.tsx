@@ -2,10 +2,8 @@
 
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
-import type { Payment, SaaSCategory, PaymentMethod } from '@/lib/types'
-import { SAAS_CATEGORIES, PAYMENT_METHODS } from '@/lib/types'
-import { formatCurrency } from '@/lib/data'
-import { cn } from '@/lib/utils'
+import { SAAS_CATEGORIES, PAYMENT_METHODS, type Payment, type SaaSCategory, type PaymentMethod } from '@/lib/types'
+import { formatCurrency, cn } from '@/lib/utils'
 import { Banknote, Building2 } from 'lucide-react'
 import Link from 'next/link'
 

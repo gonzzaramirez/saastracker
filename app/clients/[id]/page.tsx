@@ -3,7 +3,7 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
 import { Header } from '@/components/layout/header'
-import { getClientById, formatCurrency } from '@/lib/data'
+import { getClientById } from '@/lib/data'
 import { SAAS_CATEGORIES, PAYMENT_METHODS, type PaymentMethod } from '@/lib/types'
 import { 
   ArrowLeft, Globe, Phone, User, Calendar, ExternalLink, 
@@ -12,7 +12,7 @@ import {
 } from 'lucide-react'
 import Link from 'next/link'
 import { useParams } from 'next/navigation'
-import { cn } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 import { useState, useEffect } from 'react'
 import type { ClientWithPayments } from '@/lib/types'
 

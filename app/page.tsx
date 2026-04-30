@@ -2,11 +2,11 @@ import { Header } from '@/components/layout/header'
 import { StatCard } from '@/components/dashboard/stat-card'
 import { RevenueChart } from '@/components/dashboard/revenue-chart'
 import { RecentPayments } from '@/components/dashboard/recent-payments'
-import { getPaymentStats, getMonthlyRevenue, getRecentPayments, getStatsByCategory, formatCurrency } from '@/lib/data'
+import { getPaymentStats, getMonthlyRevenue, getRecentPayments, getStatsByCategory } from '@/lib/data'
 import { SAAS_CATEGORIES, type SaaSCategory } from '@/lib/types'
 import { Users, TrendingUp, CheckCircle2, AlertCircle, Dumbbell, Activity, Calendar } from 'lucide-react'
 import Link from 'next/link'
-import { cn } from '@/lib/utils'
+import { cn, formatCurrency } from '@/lib/utils'
 
 export const dynamic = 'force-dynamic'
 
