@@ -8,6 +8,8 @@ import { Users, TrendingUp, CheckCircle2, AlertCircle, Dumbbell, Activity, Calen
 import Link from 'next/link'
 import { cn } from '@/lib/utils'
 
+export const dynamic = 'force-dynamic'
+
 const categoryIcons: Record<SaaSCategory, React.ElementType> = {
   gimnasio: Dumbbell,
   pilates: Activity,
