@@ -1,9 +1,9 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import { Users, LayoutDashboard, Receipt, Menu, X } from 'lucide-react'
+import { Users, LayoutDashboard, Receipt, Menu, X, LogOut } from 'lucide-react'
 import Link from 'next/link'
-import { usePathname } from 'next/navigation'
+import { usePathname, useRouter } from 'next/navigation'
 import { useState } from 'react'
 
 const navigation = [
@@ -14,7 +14,21 @@ const navigation = [
 
 export function Header() {
   const pathname = usePathname()
+  const router = useRouter()
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false)
+  const [isLoggingOut, setIsLoggingOut] = useState(false)
+
+  async function handleLogout() {
+    setIsLoggingOut(true)
+    try {
+      await fetch('/api/auth/logout', { method: 'POST' })
+      router.replace('/login')
+      router.refresh()
+    } finally {
+      setIsLoggingOut(false)
+      setMobileMenuOpen(false)
+    }
+  }
 
   return (
     <header className="sticky top-0 z-50 border-b border-border/40 bg-background/80 backdrop-blur-xl backdrop-saturate-150">
@@ -54,18 +68,30 @@ export function Header() {
             })}
           </nav>
 
-          {/* Mobile Menu Button */}
-          <button
-            type="button"
-            className="inline-flex items-center justify-center rounded-xl p-2.5 text-muted-foreground hover:bg-secondary hover:text-foreground md:hidden transition-colors"
-            onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
-          >
-            {mobileMenuOpen ? (
-              <X className="h-5 w-5" />
-            ) : (
-              <Menu className="h-5 w-5" />
-            )}
-          </button>
+          <div className="flex items-center gap-2">
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="hidden items-center gap-2 rounded-xl px-3 py-2 text-sm font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-60 md:inline-flex"
+            >
+              <LogOut className="h-4 w-4" />
+              {isLoggingOut ? 'Saliendo...' : 'Salir'}
+            </button>
+
+            {/* Mobile Menu Button */}
+            <button
+              type="button"
+              className="inline-flex items-center justify-center rounded-xl p-2.5 text-muted-foreground hover:bg-secondary hover:text-foreground md:hidden transition-colors"
+              onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+            >
+              {mobileMenuOpen ? (
+                <X className="h-5 w-5" />
+              ) : (
+                <Menu className="h-5 w-5" />
+              )}
+            </button>
+          </div>
         </div>
 
         {/* Mobile Navigation */}
@@ -94,6 +120,15 @@ export function Header() {
                 )
               })}
             </div>
+            <button
+              type="button"
+              onClick={handleLogout}
+              disabled={isLoggingOut}
+              className="mt-3 flex w-full items-center gap-3 rounded-xl px-4 py-3 text-base font-medium text-muted-foreground transition-colors hover:bg-secondary hover:text-foreground disabled:opacity-60"
+            >
+              <LogOut className="h-5 w-5" />
+              {isLoggingOut ? 'Saliendo...' : 'Salir'}
+            </button>
           </nav>
         )}
       </div>
