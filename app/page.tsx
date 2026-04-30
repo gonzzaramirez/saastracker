@@ -17,10 +17,21 @@ const categoryIcons: Record<SaaSCategory, React.ElementType> = {
 }
 
 export default async function DashboardPage() {
-  const stats = await getPaymentStats()
-  const monthlyRevenue = await getMonthlyRevenue()
-  const recentPayments = await getRecentPayments(5)
-  const categoryStats = await getStatsByCategory()
+  let stats, monthlyRevenue, recentPayments, categoryStats
+  try {
+    ;[stats, monthlyRevenue, recentPayments, categoryStats] = await Promise.all([
+      getPaymentStats(),
+      getMonthlyRevenue(),
+      getRecentPayments(5),
+      getStatsByCategory(),
+    ])
+  } catch (e) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <p className="text-muted-foreground">Error al conectar con la base de datos. Verificá las variables de entorno de Turso.</p>
+      </div>
+    )
+  }
 
   return (
     <div className="min-h-screen bg-background">

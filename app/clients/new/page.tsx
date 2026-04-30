@@ -33,13 +33,21 @@ export default function NewClientPage() {
     e.preventDefault()
     setIsSubmitting(true)
     
-    // TODO: Replace with actual API call to PostgreSQL
-    console.log('Creating client:', formData)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    router.push('/clients')
+    try {
+      const res = await fetch('/api/clients', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(formData),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Failed to create client')
+      }
+      router.push('/clients')
+    } catch (error) {
+      console.error(error)
+      setIsSubmitting(false)
+    }
   }
 
   return (

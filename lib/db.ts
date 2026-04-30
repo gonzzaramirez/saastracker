@@ -1,14 +1,37 @@
-import { createClient } from '@libsql/client'
+import { createClient, type Client } from '@libsql/client'
 
-// Turso Database Client
-export const db = createClient({
-  url: process.env.TURSO_DATABASE_URL!,
-  authToken: process.env.TURSO_AUTH_TOKEN,
+// Lazy singleton — created on first use, not at module import time
+let _db: Client | null = null
+
+export function getDb(): Client {
+  if (!_db) {
+    const url = process.env.TURSO_DATABASE_URL
+    if (!url) {
+      throw new Error('TURSO_DATABASE_URL environment variable is not set')
+    }
+    _db = createClient({
+      url,
+      authToken: process.env.TURSO_AUTH_TOKEN,
+    })
+  }
+  return _db
+}
+
+// Keep backward-compatible `db` export as a proxy
+export const db = new Proxy({} as Client, {
+  get(_target, prop) {
+    return (getDb() as any)[prop]
+  },
 })
 
-// Initialize database tables
+// Singleton flag — avoid re-init on every serverless request
+let dbInitialized = false
+
+// Initialize database tables (only runs once per serverless instance)
 export async function initializeDatabase() {
-  await db.batch([
+  if (dbInitialized) return
+  dbInitialized = true
+  await getDb().batch([
     `CREATE TABLE IF NOT EXISTS clients (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL,

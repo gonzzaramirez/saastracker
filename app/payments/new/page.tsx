@@ -3,7 +3,6 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
 import { Header } from '@/components/layout/header'
-import { getClientsWithPayments } from '@/lib/data'
 import { SAAS_CATEGORIES, PAYMENT_METHODS, type PaymentMethod, type ClientWithPayments } from '@/lib/types'
 import { ArrowLeft, Banknote, Building2, Check } from 'lucide-react'
 import Link from 'next/link'
@@ -34,25 +33,38 @@ function NewPaymentForm() {
   })
 
   useEffect(() => {
-    getClientsWithPayments().then(setClients)
+    fetch('/api/clients')
+      .then(r => r.json())
+      .then(setClients)
   }, [])
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault()
     setIsSubmitting(true)
-    
-    // TODO: Replace with actual API call to PostgreSQL
-    console.log('Creating payment:', formData)
-    
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 500))
-    
-    router.push('/payments')
+    try {
+      const res = await fetch('/api/payments', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          clientId: formData.clientId,
+          amount: parseInt(formData.amount) || 0,
+          description: formData.description,
+          method: formData.method,
+          date: formData.date,
+        }),
+      })
+      if (!res.ok) {
+        const err = await res.json()
+        throw new Error(err.error || 'Failed to create payment')
+      }
+      router.push('/payments')
+    } catch (error) {
+      console.error(error)
+      setIsSubmitting(false)
+    }
   }
 
   const selectedClient = clients.find(c => c.id === formData.clientId)
-
-  // Auto-fill amount and description when client is selected
   const handleClientChange = (clientId: string) => {
     const client = clients.find(c => c.id === clientId)
     if (client) {

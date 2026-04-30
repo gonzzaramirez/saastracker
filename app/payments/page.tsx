@@ -3,7 +3,6 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
 import { Header } from '@/components/layout/header'
-import { getPaymentStats, getAllPayments } from '@/lib/data'
 import { SAAS_CATEGORIES, PAYMENT_METHODS, type SaaSCategory, type PaymentMethod, type PaymentStats } from '@/lib/types'
 import { Search, Plus, Banknote, Building2, Filter, Calendar, Dumbbell, Activity } from 'lucide-react'
 import { useState, useMemo, useEffect } from 'react'
@@ -34,8 +33,12 @@ export default function PaymentsPage() {
   const [paymentsWithClient, setPaymentsWithClient] = useState<any[]>([])
 
   useEffect(() => {
-    getPaymentStats().then(setStats)
-    getAllPayments().then(setPaymentsWithClient)
+    fetch('/api/stats')
+      .then(r => r.json())
+      .then(data => setStats(data.stats))
+    fetch('/api/payments')
+      .then(r => r.json())
+      .then(setPaymentsWithClient)
   }, [])
 
   const filteredPayments = useMemo(() => {

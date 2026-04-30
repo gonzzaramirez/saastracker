@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { db, initializeDatabase } from '@/lib/db'
 import type { SaaSCategory, PaymentMethod } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET(
   request: Request,
   { params }: { params: Promise<{ id: string }> }

@@ -2,7 +2,6 @@
 
 import { Header } from '@/components/layout/header'
 import { ClientCard } from '@/components/clients/client-card'
-import { getClientsWithPayments, getStatsByCategory } from '@/lib/data'
 import { SAAS_CATEGORIES, type SaaSCategory } from '@/lib/types'
 import { Search, Plus, Dumbbell, Activity, Calendar, CheckCircle2, AlertCircle, Users } from 'lucide-react'
 import { useState, useMemo, useEffect } from 'react'
@@ -28,8 +27,9 @@ export default function ClientsPage() {
   })
 
   useEffect(() => {
-    getClientsWithPayments().then(setAllClients)
-    getStatsByCategory().then(setCategoryStats)
+    fetch('/api/clients')
+      .then(r => r.json())
+      .then(setAllClients)
   }, [])
 
   const [search, setSearch] = useState('')

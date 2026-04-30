@@ -3,7 +3,6 @@
 import dayjs from 'dayjs'
 import 'dayjs/locale/es'
 import { Header } from '@/components/layout/header'
-import { getClientById } from '@/lib/data'
 import { SAAS_CATEGORIES, PAYMENT_METHODS, type PaymentMethod } from '@/lib/types'
 import { 
   ArrowLeft, Globe, Phone, User, Calendar, ExternalLink, 
@@ -31,10 +30,12 @@ export default function ClientDetailPage() {
   const [copied, setCopied] = useState<'email' | 'password' | null>(null)
 
   useEffect(() => {
-    getClientById(params.id as string).then(data => {
-      setClient(data)
-      setLoading(false)
-    })
+    fetch(`/api/clients/${params.id}`)
+      .then(r => r.json())
+      .then(data => {
+        setClient(data.error ? null : data)
+        setLoading(false)
+      })
   }, [params.id])
 
   const copyToClipboard = async (text: string, type: 'email' | 'password') => {

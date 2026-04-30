@@ -1,6 +1,8 @@
 import { NextResponse } from 'next/server'
 import { db, generateId, initializeDatabase } from '@/lib/db'
 
+export const dynamic = 'force-dynamic'
+
 const seedClients = [
   { name: 'FitMax Gym', category: 'gimnasio', website: 'https://fitmaxgym.com.ar', ownerName: 'Carlos Garcia', phone: '+54 11 4567-8901', email: 'admin@fitmaxgym.com.ar', password: 'fitmax2024', monthlyFee: 45000, status: 'active' },
   { name: 'PowerHouse Fitness', category: 'gimnasio', website: 'https://powerhouse.com.ar', ownerName: 'Maria Lopez', phone: '+54 11 5678-9012', email: 'contact@powerhouse.com.ar', password: 'power123', monthlyFee: 55000, status: 'active' },

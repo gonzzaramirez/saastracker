@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { db, initializeDatabase } from '@/lib/db'
 import dayjs from 'dayjs'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     await initializeDatabase()

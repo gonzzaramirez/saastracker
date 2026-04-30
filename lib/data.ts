@@ -289,3 +289,45 @@ export async function getStatsByCategory(): Promise<Record<SaaSCategory, { clien
   
   return stats
 }
+
+import { generateId } from './db'
+
+export async function createClient(data: Omit<Client, 'id' | 'createdAt' | 'status'>) {
+  const id = generateId()
+  await db.execute({
+    sql: `
+      INSERT INTO clients (id, name, category, website, owner_name, phone, email, password, monthly_fee, status)
+      VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+    `,
+    args: [
+      id,
+      data.name,
+      data.category,
+      data.website,
+      data.ownerName,
+      data.phone,
+      data.email,
+      data.password,
+      data.monthlyFee,
+      'active'
+    ]
+  })
+}
+
+export async function createPayment(data: Omit<Payment, 'id'>) {
+  const id = generateId()
+  await db.execute({
+    sql: `
+      INSERT INTO payments (id, client_id, amount, date, description, method)
+      VALUES (?, ?, ?, ?, ?, ?)
+    `,
+    args: [
+      id,
+      data.clientId,
+      data.amount,
+      data.date,
+      data.description,
+      data.method
+    ]
+  })
+}

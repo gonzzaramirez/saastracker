@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { db, generateId, initializeDatabase } from '@/lib/db'
 import type { SaaSCategory } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     await initializeDatabase()
@@ -45,6 +47,20 @@ export async function POST(request: Request) {
     await initializeDatabase()
     
     const body = await request.json()
+
+    // Validate required fields
+    const required = ['name', 'category', 'website', 'ownerName', 'phone', 'email', 'password', 'monthlyFee']
+    for (const field of required) {
+      if (body[field] === undefined || body[field] === '') {
+        return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 })
+      }
+    }
+
+    const validCategories = ['gimnasio', 'pilates', 'cymple']
+    if (!validCategories.includes(body.category)) {
+      return NextResponse.json({ error: 'Invalid category' }, { status: 400 })
+    }
+
     const id = generateId()
     
     await db.execute({
@@ -59,7 +75,7 @@ export async function POST(request: Request) {
         body.phone,
         body.email,
         body.password,
-        body.monthlyFee,
+        Number(body.monthlyFee),
         body.status || 'active',
       ],
     })

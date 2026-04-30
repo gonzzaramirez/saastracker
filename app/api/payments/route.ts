@@ -2,6 +2,8 @@ import { NextResponse } from 'next/server'
 import { db, generateId, initializeDatabase } from '@/lib/db'
 import type { PaymentMethod, SaaSCategory } from '@/lib/types'
 
+export const dynamic = 'force-dynamic'
+
 export async function GET() {
   try {
     await initializeDatabase()
@@ -39,6 +41,20 @@ export async function POST(request: Request) {
     await initializeDatabase()
     
     const body = await request.json()
+
+    // Validate required fields
+    const required = ['clientId', 'amount', 'date', 'description', 'method']
+    for (const field of required) {
+      if (body[field] === undefined || body[field] === '') {
+        return NextResponse.json({ error: `Missing required field: ${field}` }, { status: 400 })
+      }
+    }
+
+    const validMethods = ['transferencia', 'efectivo']
+    if (!validMethods.includes(body.method)) {
+      return NextResponse.json({ error: 'Invalid payment method' }, { status: 400 })
+    }
+
     const id = generateId()
     
     await db.execute({
@@ -47,7 +63,7 @@ export async function POST(request: Request) {
       args: [
         id,
         body.clientId,
-        body.amount,
+        Number(body.amount),
         body.date,
         body.description,
         body.method,
