@@ -20,7 +20,9 @@ export function getDb(): Client {
 // Keep backward-compatible `db` export as a proxy
 export const db = new Proxy({} as Client, {
   get(_target, prop) {
-    return (getDb() as any)[prop]
+    const client = getDb() as any
+    const value = client[prop]
+    return typeof value === 'function' ? value.bind(client) : value
   },
 })
 
